@@ -1,0 +1,51 @@
+{
+    "name": "smart-resource",
+    "version": "0.0.1",
+    "description": "An observable helper for asynchronous resources.",
+    "keywords": [
+        "observabe",
+        "resource",
+        "fetch",
+        "react",
+        "promise",
+        "async"
+    ],
+    "author": "erictooth",
+    "license": "Apache-2.0",
+    "files": [
+        "dist-cjs",
+        "dist-esm",
+        "dist-types"
+    ],
+    "main": "./dist-cjs/index.js",
+    "module": "./dist-esm/index.js",
+    "types": "./dist-types/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist-esm/index.js",
+            "require": "./dist-cjs/index.js"
+        },
+        "./react": {
+            "import": "./dist-esm/react.js",
+            "require": "./dist-cjs/react.js"
+        }
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
+    },
+    "peerDependenciesMeta": {
+        "react": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@erictooth/eslint-config": "^8.0.0",
+        "@types/jest": "^27",
+        "@types/react": "^17",
+        "esbuild": "^0.14.25",
+        "eslint": "^8",
+        "jest": "^27",
+        "prettier": "~2.5",
+        "typescript": "~4.6"
+    }
+}
