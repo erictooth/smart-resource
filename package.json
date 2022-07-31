@@ -56,13 +56,15 @@
         "@erictooth/eslint-config": "^8.0.0",
         "@swc/cli": "^0.1.57",
         "@swc/core": "^1.2.220",
-        "@types/jest": "^27",
-        "@types/react": "^17",
+        "@types/jest": "^28",
+        "@types/react": "^18",
         "eslint": "^8",
-        "jest": "^27",
+        "jest": "^28",
         "preact": "^10",
-        "prettier": "~2.5",
-        "typescript": "~4.6"
+        "prettier": "~2.7",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "typescript": "~4.7"
     },
     "packageManager": "pnpm@7.8.0"
 }
