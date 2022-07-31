@@ -22,12 +22,10 @@
     },
     "files": [
         "dist-cjs",
-        "dist-esm",
-        "dist-types"
+        "dist-esm"
     ],
     "main": "./dist-cjs/index.js",
     "module": "./dist-esm/index.js",
-    "types": "./dist-types/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist-esm/index.js",
@@ -52,9 +50,10 @@
     },
     "devDependencies": {
         "@erictooth/eslint-config": "^8.0.0",
+        "@swc/cli": "^0.1.57",
+        "@swc/core": "^1.2.220",
         "@types/jest": "^27",
         "@types/react": "^17",
-        "esbuild": "^0.14.25",
         "eslint": "^8",
         "jest": "^27",
         "preact": "^10",
