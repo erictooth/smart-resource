@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { SmartResource } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
-    const [snapshot, setSnapshot] = useState<Awaited<T> | undefined>(
+    const [snapshot, setSnapshot] = useState<Awaited<T> | null>(
         resource.value
     );
     const [error, setError] = useState<any>(null);
@@ -14,7 +14,7 @@ export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
                 setSnapshot(val);
             },
             (err: any) => {
-                setSnapshot(undefined);
+                setSnapshot(null);
                 setError(err);
             }
         ).unsubscribe;

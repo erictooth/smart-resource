@@ -19,11 +19,10 @@ export type Subscription = { closed(): boolean; unsubscribe(): void };
 export class SmartResource<T> {
     protected _errorVal: any = undefined;
     protected _fetcher: Fetcher<T>;
-    private _initialArgs: any[];
     protected _queued: T[] = [];
     protected _options: ResourceOptions<T>;
     protected _subscribers = new Set<any>();
-    protected _value: Awaited<T> | undefined = undefined;
+    protected _value: Awaited<T> | null = null;
 
     get status(): RequestStatus {
         if (this._value) {
@@ -41,18 +40,16 @@ export class SmartResource<T> {
         return "initial";
     }
 
-    get value(): Awaited<T> | undefined {
+    get value(): Awaited<T> | null {
         return this._value;
     }
 
     constructor(
         fetcher: Fetcher<T>,
-        options: Partial<ResourceOptions<T> & { initialArgs: any[] }> = {}
+        options: Partial<ResourceOptions<T>> = {}
     ) {
         this._fetcher = fetcher;
         this._options = Object.assign({ ...defaultOptions }, options);
-
-        this._initialArgs = options.initialArgs || [];
     }
 
     protected _next(value: Awaited<T>) {
@@ -64,7 +61,7 @@ export class SmartResource<T> {
     }
 
     protected _error(err: any) {
-        this._value = undefined;
+        this._value = null;
         this._errorVal = err;
         for (const subscriber of this._subscribers) {
             subscriber.onError?.(this._errorVal);
@@ -72,7 +69,7 @@ export class SmartResource<T> {
     }
 
     subscribe(
-        onNext: (val: Awaited<T>) => void,
+        onNext: (val: Awaited<T> | null) => void,
         onError?: (err: any) => void,
         onComplete?: () => void
     ): Subscription {
@@ -84,11 +81,7 @@ export class SmartResource<T> {
 
         this._subscribers.add(subscription);
 
-        if (this._value !== undefined) {
-            onNext(this._value);
-        } else if (this.status === "initial") {
-            this.fetch(...this._initialArgs);
-        }
+        onNext(this._value);
 
         return {
             closed() {
