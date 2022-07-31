@@ -34,6 +34,10 @@
         "./react": {
             "import": "./dist-esm/react.js",
             "require": "./dist-cjs/react.js"
+        },
+        "./preact": {
+            "import": "./dist-esm/preact.js",
+            "require": "./dist-cjs/preact.js"
         }
     },
     "peerDependencies": {
