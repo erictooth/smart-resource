@@ -19,8 +19,8 @@ dist-types: node_modules $(SRC) tsconfig.json
 lint: node_modules $(SRC)
 	npx eslint src
 
-node_modules: package.json package-lock.json
-	@npm ci
+node_modules: package.json pnpm-lock.yaml
+	@pnpm install
 
 prepack: dist-cjs dist-esm dist-types
 

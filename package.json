@@ -60,5 +60,6 @@
         "preact": "^10",
         "prettier": "~2.5",
         "typescript": "~4.6"
-    }
+    },
+    "packageManager": "pnpm@7.8.0"
 }
