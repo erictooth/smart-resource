@@ -22,6 +22,7 @@ export class SmartResource<T> {
     protected _queued: T[] = [];
     protected _options: ResourceOptions<T>;
     protected _subscribers = new Set<any>();
+    protected _statusSubscribers = new Set<any>();
     protected _value: Awaited<T> | null = null;
 
     get status(): RequestStatus {
@@ -60,6 +61,12 @@ export class SmartResource<T> {
         }
     }
 
+    protected _notifyStatusSubscribers() {
+        for (const subscriber of this._statusSubscribers) {
+            subscriber(this.status);
+        }
+    }
+
     protected _error(err: any) {
         this._value = null;
         this._errorVal = err;
@@ -93,6 +100,21 @@ export class SmartResource<T> {
         };
     }
 
+    subscribeStatus(onNext: (status: RequestStatus) => void): Subscription {
+        this._statusSubscribers.add(onNext);
+
+        onNext(this.status);
+
+        return {
+            closed() {
+                return false;
+            },
+            unsubscribe: () => {
+                this._statusSubscribers.delete(onNext);
+            },
+        };
+    }
+
     protected _cancelPromises(promises: T[]) {
         if (!this._options.onCancel) {
             return;
@@ -105,11 +127,20 @@ export class SmartResource<T> {
 
     async fetch(...args: any[]) {
         const promise = this._fetcher(...args);
+
+        const prevQueuedLength = this._queued.length;
+
         if (this._options.mode === "takeLatest") {
             this._cancelPromises(this._queued);
             this._queued = [];
         }
+
         this._queued.push(promise);
+
+        if (this._queued.length === 1 && prevQueuedLength === 0) {
+            this._notifyStatusSubscribers();
+        }
+
         try {
             const result = await promise;
             const promiseIdx = this._queued.indexOf(promise);
@@ -117,8 +148,13 @@ export class SmartResource<T> {
                 this._cancelPromises(this._queued.splice(0, promiseIdx + 1));
                 this._next(result);
             }
+
+            if (!this._queued.length) {
+                this._notifyStatusSubscribers();
+            }
         } catch (err) {
             this._error(err);
+            this._notifyStatusSubscribers();
         }
     }
 }
