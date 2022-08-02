@@ -25,16 +25,16 @@ export class SmartResource<T> {
     protected _value: Awaited<T> | null = null;
 
     get status(): RequestStatus {
-        if (this._value) {
-            return "success";
+        if (this._queued.length) {
+            return "pending";
         }
 
         if (this._errorVal) {
             return "error";
         }
 
-        if (this._queued.length) {
-            return "pending";
+        if (this._value) {
+            return "success";
         }
 
         return "initial";
