@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { SmartResource } from "./index";
+import { SmartResource, RequestStatus } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
     const [snapshot, setSnapshot] = useState<Awaited<T> | null>(resource.value);
@@ -19,4 +19,16 @@ export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
     }, [resource]);
 
     return [snapshot, error] as const;
+};
+
+export const useResourceStatus = (resource: SmartResource<any>) => {
+    const [status, setStatus] = useState<RequestStatus>(resource.status);
+
+    useEffect(() => {
+        return resource.subscribeStatus((nextStatus) => {
+            setStatus(nextStatus);
+        }).unsubscribe;
+    }, [resource]);
+
+    return status;
 };
