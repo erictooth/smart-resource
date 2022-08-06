@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react-hooks";
 import { SmartResource } from "../index";
 import { useResourceSnapshot, useResourceStatus } from "../react";
 
@@ -14,7 +14,9 @@ it("does not fetch until SmartResource.fetch() is called", async () => {
 
     expect(result.current[0]).toBe(null);
 
-    SampleResource.fetch();
+    act(() => {
+        SampleResource.fetch();
+    });
 
     await waitForNextUpdate();
 
@@ -30,7 +32,9 @@ it("updates the status result", async () => {
 
     expect(result.current).toBe("initial");
 
-    SampleResource.fetch();
+    act(() => {
+        SampleResource.fetch();
+    });
 
     expect(result.current).toBe("pending");
 
