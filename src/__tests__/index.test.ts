@@ -144,3 +144,27 @@ it("only notifies status subscribers when status changes in takeEvery mode", asy
     expect(statusSubscriber).toHaveBeenCalledTimes(3);
     expect(statusSubscriber).toHaveBeenLastCalledWith("success");
 });
+
+it("sets status as error when the fetcher function throws/rejects", async () => {
+    const errorVal = "error";
+    const ErrorResource = new SmartResource(() => {
+        return Promise.reject(errorVal);
+    });
+    const resultSubscriber = jest.fn();
+    const errorSubscriber = jest.fn();
+    const statusSubscriber = jest.fn();
+
+    ErrorResource.subscribe(resultSubscriber, errorSubscriber);
+    ErrorResource.subscribeStatus(statusSubscriber);
+
+    expect(statusSubscriber).toHaveBeenLastCalledWith("initial");
+
+    ErrorResource.fetch();
+
+    expect(statusSubscriber).toHaveBeenLastCalledWith("pending");
+
+    await new Promise(process.nextTick);
+
+    expect(statusSubscriber).toHaveBeenLastCalledWith("error");
+    expect(errorSubscriber).toHaveBeenLastCalledWith(errorVal);
+});

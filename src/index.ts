@@ -153,6 +153,7 @@ export class SmartResource<T> {
                 this._notifyStatusSubscribers();
             }
         } catch (err) {
+            this._queued.splice(this._queued.indexOf(promise), 1);
             this._error(err);
             this._notifyStatusSubscribers();
         }
