@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { SmartResource, RequestStatus } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
@@ -32,3 +32,7 @@ export const useResourceStatus = (resource: SmartResource<any>) => {
 
     return status;
 };
+
+export const useResourceInstance = <T>(
+    createResource: () => SmartResource<T>
+) => useRef(createResource()).current;
