@@ -17,7 +17,7 @@ export type Subscription = { closed(): boolean; unsubscribe(): void };
  * Reflects the result of one or more asynchronous requests.
  */
 export class SmartResource<T> {
-    protected _errorVal: any = undefined;
+    protected _errorVal: any = null;
     protected _fetcher: Fetcher<T>;
     protected _queued: T[] = [];
     protected _options: ResourceOptions<T>;
@@ -25,12 +25,16 @@ export class SmartResource<T> {
     protected _statusSubscribers = new Set<any>();
     protected _value: Awaited<T> | null = null;
 
+    // this._errorVal can be set to `undefined`, so a flag is used to track
+    // if there's currently an error
+    protected _hasError = false;
+
     get status(): RequestStatus {
         if (this._queued.length) {
             return "pending";
         }
 
-        if (this._errorVal) {
+        if (this._hasError) {
             return "error";
         }
 
@@ -45,6 +49,10 @@ export class SmartResource<T> {
         return this._value;
     }
 
+    get error(): any {
+        return this._errorVal;
+    }
+
     constructor(
         fetcher: Fetcher<T>,
         options: Partial<ResourceOptions<T>> = {}
@@ -54,7 +62,8 @@ export class SmartResource<T> {
     }
 
     protected _next(value: Awaited<T>) {
-        this._errorVal = undefined;
+        this._errorVal = null;
+        this._hasError = false;
         this._value = value;
         for (const subscriber of this._subscribers) {
             subscriber.onNext(this._value);
@@ -69,6 +78,7 @@ export class SmartResource<T> {
 
     protected _error(err: any) {
         this._value = null;
+        this._hasError = true;
         this._errorVal = err;
         for (const subscriber of this._subscribers) {
             subscriber.onError?.(this._errorVal);
