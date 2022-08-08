@@ -3,7 +3,7 @@ import { SmartResource, RequestStatus } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
     const [snapshot, setSnapshot] = useState<Awaited<T> | null>(resource.value);
-    const [error, setError] = useState<any>(null);
+    const [error, setError] = useState<any>(resource.error);
 
     useEffect(() => {
         return resource.subscribe(

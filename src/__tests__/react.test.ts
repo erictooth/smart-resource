@@ -42,3 +42,23 @@ it("updates the status result", async () => {
 
     expect(result.current).toBe("success");
 });
+
+it("correctly sets error status", async () => {
+    const ErrorResource = new SmartResource(() => Promise.reject());
+
+    const { result, waitForNextUpdate } = renderHook(() =>
+        useResourceStatus(ErrorResource)
+    );
+
+    expect(result.current).toBe("initial");
+
+    act(() => {
+        ErrorResource.fetch();
+    });
+
+    expect(result.current).toBe("pending");
+
+    await waitForNextUpdate();
+
+    expect(result.current).toBe("error");
+});
