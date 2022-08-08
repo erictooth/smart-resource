@@ -145,7 +145,8 @@ export class SmartResource<T> {
             const result = await promise;
             const promiseIdx = this._queued.indexOf(promise);
             if (promiseIdx !== -1) {
-                this._cancelPromises(this._queued.splice(0, promiseIdx + 1));
+                this._cancelPromises(this._queued.splice(0, promiseIdx));
+                this._queued.shift();
                 this._next(result);
             }
 

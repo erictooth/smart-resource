@@ -168,3 +168,22 @@ it("sets status as error when the fetcher function throws/rejects", async () => 
     expect(statusSubscriber).toHaveBeenLastCalledWith("error");
     expect(errorSubscriber).toHaveBeenLastCalledWith(errorVal);
 });
+
+it("cancels promises correctly in takeLatest mode", async () => {
+    const onCancel = jest.fn();
+    const SampleResource = getSampleResource({ mode: "takeLatest", onCancel });
+
+    SampleResource.fetch();
+
+    expect(onCancel).toHaveBeenCalledTimes(0);
+
+    await new Promise(process.nextTick);
+
+    expect(onCancel).toHaveBeenCalledTimes(0);
+
+    SampleResource.fetch();
+    SampleResource.fetch();
+    SampleResource.fetch();
+
+    expect(onCancel).toHaveBeenCalledTimes(2);
+});
