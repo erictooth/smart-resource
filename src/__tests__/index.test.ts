@@ -187,3 +187,30 @@ it("cancels promises correctly in takeLatest mode", async () => {
 
     expect(onCancel).toHaveBeenCalledTimes(2);
 });
+
+it("resets state after calling .reset()", async () => {
+    const SampleResource = getSampleResource({ mode: "takeLatest" });
+    const resultSubscriber = jest.fn();
+    const statusSubscriber = jest.fn();
+
+    SampleResource.subscribe(resultSubscriber);
+    SampleResource.subscribeStatus(statusSubscriber);
+
+    SampleResource.fetch();
+
+    await new Promise(process.nextTick);
+
+    expect(resultSubscriber).toHaveBeenCalledTimes(2);
+    expect(resultSubscriber).toHaveBeenLastCalledWith(sampleResult);
+    expect(statusSubscriber).toHaveBeenCalledTimes(3);
+    expect(statusSubscriber).toHaveBeenLastCalledWith("success");
+
+    SampleResource.reset();
+
+    await new Promise(process.nextTick);
+
+    expect(resultSubscriber).toHaveBeenCalledTimes(3);
+    expect(resultSubscriber).toHaveBeenLastCalledWith(null);
+    expect(statusSubscriber).toHaveBeenCalledTimes(4);
+    expect(statusSubscriber).toHaveBeenLastCalledWith("initial");
+});

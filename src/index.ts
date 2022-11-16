@@ -125,6 +125,13 @@ export class SmartResource<T> {
         };
     }
 
+    reset(): void {
+        this._cancelPromises(this._queued);
+        this._queued = [];
+        this._next(null as any);
+        this._notifyStatusSubscribers();
+    }
+
     protected _cancelPromises(promises: T[]) {
         if (!this._options.onCancel) {
             return;
