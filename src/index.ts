@@ -61,13 +61,17 @@ export class SmartResource<T> {
         this._options = Object.assign({ ...defaultOptions }, options);
     }
 
-    protected _next(value: Awaited<T>) {
+    private _internalNext(value: Awaited<T>) {
         this._errorVal = null;
         this._hasError = false;
         this._value = value;
         for (const subscriber of this._subscribers) {
             subscriber.onNext(this._value);
-        }
+        }  
+    }
+
+    protected _next(value: Awaited<T>) {
+        this._internalNext();
     }
 
     protected _notifyStatusSubscribers() {
@@ -128,7 +132,7 @@ export class SmartResource<T> {
     reset(): void {
         this._cancelPromises(this._queued);
         this._queued = [];
-        this._next(null as any);
+        this._internalNext(null as any);
         this._notifyStatusSubscribers();
     }
 
