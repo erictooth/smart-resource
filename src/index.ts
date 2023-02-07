@@ -67,11 +67,11 @@ export class SmartResource<T> {
         this._value = value;
         for (const subscriber of this._subscribers) {
             subscriber.onNext(this._value);
-        }  
+        }
     }
 
     protected _next(value: Awaited<T>) {
-        this._internalNext();
+        this._internalNext(value);
     }
 
     protected _notifyStatusSubscribers() {
