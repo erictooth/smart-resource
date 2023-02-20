@@ -1,7 +1,7 @@
 {
     "name": "smart-resource",
-    "version": "0.3.8",
-    "description": "An observable helper for asynchronous resources.",
+    "version": "1.0.0",
+    "description": "An observable utility for asynchronous resources.",
     "keywords": [
         "observable",
         "resource",

@@ -15,19 +15,20 @@ function getTodos(): {title: string;}[] {
 const TodosResource = new SmartResource(getTodos);
 
 function App() {
-  const [todos] = useResourceSnapshot(TodosResource);
-  
-  if (!todos) {
+  const todos = useResourceSnapshot(TodosResource);
+
+  if (!todos.value) {
     return <p>Loading...</p>;
   }
-  
+
   return <ul>
-    {todos.map(todo => <li>{todo.title}<li>)}
+    {todos.value.map(todo => <li>{todo.title}<li>)}
   </ul>;
 }
 ```
 
 ## Installation
+
 `npm install smart-resource`
 
 ## Usage
@@ -36,15 +37,15 @@ A `SmartResource` takes any function that returns a promise and converts it into
 
 ```ts
 const RandomNumberResource = new SmartPromise(() => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(Math.random());
-    }, 1000);
-  });
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(Math.random());
+        }, 1000);
+    });
 });
 
-const subscriber = RandomNumberResource.subscribe((val) => {
-  console.log(`New random number: ${val}!`);
+const subscriber = RandomNumberResource.subscribe((resource) => {
+    console.log(`New random number: ${resource.value}!`);
 });
 
 RandomNumberResource.fetch();
@@ -71,10 +72,14 @@ import { RandomNumberResource } from "./the-previous-example";
 import { useResourceSnapshot } from "smart-resource/react";
 
 function RandomNumberGenerator() {
-  const [randomNumber] = useResourceSnapshot(RandomNumberResource);
-  return <div>
-    <button onClick={() => RandomNumberResource.fetch()}>Get a new number</button>
-    <h1>Number: {randomNumber}</h1>
-  </div>;
-};
+    const randomNumber = useResourceSnapshot(RandomNumberResource);
+    return (
+        <div>
+            <button onClick={() => RandomNumberResource.fetch()}>
+                Get a new number
+            </button>
+            <h1>Number: {randomNumber.value}</h1>
+        </div>
+    );
+}
 ```
