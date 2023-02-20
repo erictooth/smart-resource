@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-hooks";
 import { SmartResource } from "../index";
-import { useResourceSnapshot, useResourceStatus } from "../react";
+import { useResourceSnapshot } from "../react";
 
 const sampleResult = "sampledata";
 
@@ -12,7 +12,7 @@ it("does not fetch until SmartResource.fetch() is called", async () => {
         useResourceSnapshot(SampleResource)
     );
 
-    expect(result.current[0]).toBe(null);
+    expect(result.current.value).toBe(null);
 
     act(() => {
         SampleResource.fetch();
@@ -20,45 +20,45 @@ it("does not fetch until SmartResource.fetch() is called", async () => {
 
     await waitForNextUpdate();
 
-    expect(result.current[0]).toBe(sampleResult);
+    expect(result.current.value).toBe(sampleResult);
 });
 
 it("updates the status result", async () => {
     const SampleResource = getSampleResource();
 
     const { result, waitForNextUpdate } = renderHook(() =>
-        useResourceStatus(SampleResource)
+        useResourceSnapshot(SampleResource)
     );
 
-    expect(result.current).toBe("initial");
+    expect(result.current.status).toBe("initial");
 
     act(() => {
         SampleResource.fetch();
     });
 
-    expect(result.current).toBe("pending");
+    expect(result.current.status).toBe("pending");
 
     await waitForNextUpdate();
 
-    expect(result.current).toBe("success");
+    expect(result.current.status).toBe("success");
 });
 
 it("correctly sets error status", async () => {
     const ErrorResource = new SmartResource(() => Promise.reject());
 
     const { result, waitForNextUpdate } = renderHook(() =>
-        useResourceStatus(ErrorResource)
+        useResourceSnapshot(ErrorResource)
     );
 
-    expect(result.current).toBe("initial");
+    expect(result.current.status).toBe("initial");
 
     act(() => {
         ErrorResource.fetch();
     });
 
-    expect(result.current).toBe("pending");
+    expect(result.current.status).toBe("pending");
 
     await waitForNextUpdate();
 
-    expect(result.current).toBe("error");
+    expect(result.current.status).toBe("error");
 });

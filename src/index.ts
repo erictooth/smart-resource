@@ -37,17 +37,9 @@ export class SmartResource<T> {
     // if there's currently an error
     protected _hasError = false;
 
-    private _getRequest(): Resource<T> {
-        return {
-            status: this.status,
-            value: this.value,
-            error: this.error,
-        };
-    }
-
     private _pushToSubscribers() {
         for (const subscriber of this._subscribers) {
-            subscriber.onNext(this._getRequest());
+            subscriber.onNext(this.getResource());
         }
     }
 
@@ -79,7 +71,7 @@ export class SmartResource<T> {
         });
     }
 
-    get status(): ResourceStatus {
+    protected get _status(): ResourceStatus {
         if (this._queued.length) {
             return "pending";
         }
@@ -95,12 +87,12 @@ export class SmartResource<T> {
         return "initial";
     }
 
-    get value(): Awaited<T> | null {
-        return this._value;
-    }
-
-    get error(): any {
-        return this._errorVal;
+    getResource(): Resource<T> {
+        return {
+            status: this._status,
+            value: this._value,
+            error: this._errorVal,
+        };
     }
 
     subscribe(
@@ -116,7 +108,7 @@ export class SmartResource<T> {
 
         this._subscribers.add(subscription);
 
-        onNext(this._getRequest());
+        onNext(this.getResource());
 
         return {
             closed() {

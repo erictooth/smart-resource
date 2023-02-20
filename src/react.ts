@@ -1,30 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { SmartResource, ResourceStatus } from "./index";
+import { SmartResource, type Resource } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
-    const [snapshot, setSnapshot] = useState<Awaited<T> | null>(resource.value);
-    const [error, setError] = useState<any>(resource.error);
+    const [snapshot, setSnapshot] = useState<Resource<T>>(
+        resource.getResource()
+    );
 
     useEffect(() => {
-        return resource.subscribe((request) => {
-            setError(request.error);
-            setSnapshot(request.value);
+        return resource.subscribe((resource) => {
+            setSnapshot(resource);
         }).unsubscribe;
     }, [resource]);
 
-    return [snapshot, error] as const;
-};
-
-export const useResourceStatus = (resource: SmartResource<any>) => {
-    const [status, setStatus] = useState<ResourceStatus>(resource.status);
-
-    useEffect(() => {
-        return resource.subscribe((request) => {
-            setStatus(request.status);
-        }).unsubscribe;
-    }, [resource]);
-
-    return status;
+    return snapshot;
 };
 
 export const useResourceInstance = <T>(
