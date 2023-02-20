@@ -1,32 +1,26 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { SmartResource, RequestStatus } from "./index";
+import { SmartResource, ResourceStatus } from "./index";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
     const [snapshot, setSnapshot] = useState<Awaited<T> | null>(resource.value);
     const [error, setError] = useState<any>(resource.error);
 
     useEffect(() => {
-        return resource.subscribe(
-            (val) => {
-                setError(null);
-                setSnapshot(val);
-            },
-            (err: any) => {
-                setSnapshot(null);
-                setError(err);
-            }
-        ).unsubscribe;
+        return resource.subscribe((request) => {
+            setError(request.error);
+            setSnapshot(request.value);
+        }).unsubscribe;
     }, [resource]);
 
     return [snapshot, error] as const;
 };
 
 export const useResourceStatus = (resource: SmartResource<any>) => {
-    const [status, setStatus] = useState<RequestStatus>(resource.status);
+    const [status, setStatus] = useState<ResourceStatus>(resource.status);
 
     useEffect(() => {
-        return resource.subscribeStatus((nextStatus) => {
-            setStatus(nextStatus);
+        return resource.subscribe((request) => {
+            setStatus(request.status);
         }).unsubscribe;
     }, [resource]);
 
