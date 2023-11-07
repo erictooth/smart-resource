@@ -9,11 +9,11 @@ clean: ## Clean all build and install artifacts
 
 dist-cjs: node_modules $(SRC)
 	pnpm exec swc ./src --config-file .swcrc-cjs --out-dir dist-cjs
-	pnpm exec tsc --emitDeclarationOnly --declaration --declarationMap false --declarationDir dist-cjs
+	pnpm exec tsc --declaration --declarationMap false --declarationDir dist-cjs
 
 dist-esm: node_modules $(SRC)
 	pnpm exec swc ./src --config-file .swcrc-esm --out-dir dist-esm
-	pnpm exec tsc --emitDeclarationOnly --declaration --declarationMap false --declarationDir dist-esm
+	pnpm exec tsc --declaration --declarationMap false --declarationDir dist-esm
 
 lint: node_modules $(SRC)
 	pnpm exec eslint src

@@ -1,8 +1,17 @@
 {
     "include": ["src"],
     "compilerOptions": {
-        "moduleResolution": "node",
-        "strict": true,
-        "target": "ES2022"
+        "declaration": true,
+		"esModuleInterop": true,
+		"lib": ["es2022", "dom", "dom.iterable"],
+		"module": "ESNext",
+		"moduleDetection": "force",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"noUncheckedIndexedAccess": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "es2022",
+		"verbatimModuleSyntax": true
     }
 }

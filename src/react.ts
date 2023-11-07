@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SmartResource } from "./index";
-import { ResourceState } from "./ResourceState";
+import { type ResourceState } from "./ResourceState";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
     const [snapshot, setSnapshot] = useState<ResourceState<T>>(
