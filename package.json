@@ -80,7 +80,7 @@
             }
         }
     },
-    "packageManager": "pnpm@7.8.0",
+    "packageManager": "pnpm@8.10.2",
     "dependencies": {
         "rxjs": "^7.8.1"
     }
