@@ -1,15 +1,9 @@
 {
   "jsc": {
     "parser": {
-      "syntax": "typescript",
-      "decorators": true
+      "syntax": "typescript"
     },
-    "target": "es2020",
-    "transform": {
-      "react": {
-        "runtime": "automatic"
-      }
-    }
+    "target": "es2020"
   },
   "sourceMaps": true
 }

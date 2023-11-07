@@ -1,15 +1,9 @@
 {
   "jsc": {
     "parser": {
-      "syntax": "typescript",
-      "decorators": true
+      "syntax": "typescript"
     },
-    "target": "es2019",
-    "transform": {
-      "react": {
-        "runtime": "automatic"
-      }
-    }
+    "target": "es2019"
   },
   "module": {
     "type": "commonjs"
