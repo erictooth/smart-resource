@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { SmartResource, type Resource } from "./index";
+import { SmartResource } from "./index";
+import { ResourceState } from "./ResourceState";
 
 export const useResourceSnapshot = <T>(resource: SmartResource<T>) => {
-    const [snapshot, setSnapshot] = useState<Resource<T>>(
-        resource.getResource()
+    const [snapshot, setSnapshot] = useState<ResourceState<T>>(
+        resource.state.value
     );
 
     useEffect(() => {
-        return resource.subscribe((resource) => {
+        return resource.state.subscribe((resource) => {
             setSnapshot(resource);
         }).unsubscribe;
     }, [resource]);

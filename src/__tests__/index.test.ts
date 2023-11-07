@@ -1,18 +1,7 @@
-import { SmartResource, type Resource } from "../index";
+import { SmartResource } from "../index";
+import { INITIAL_STATE, PENDING_STATE } from "../ResourceState";
 
 const sampleResult = "sampledata";
-
-const initialRequest: Resource<any> = {
-    status: "initial",
-    value: null,
-    error: null,
-};
-
-const pendingRequest: Resource<any> = {
-    status: "pending",
-    value: null,
-    error: null,
-};
 
 const getSampleResource = (options = {}) =>
     new SmartResource(async () => sampleResult, options);
@@ -21,10 +10,10 @@ it("provides `null` as the initial value before a fetch occurs", () => {
     const SampleResource = getSampleResource();
     const fn1 = jest.fn();
 
-    SampleResource.subscribe(fn1);
+    SampleResource.state.subscribe(fn1);
 
     expect(fn1.mock.calls.length).toBe(1);
-    expect(fn1.mock.calls[0][0].value).toBe(initialRequest.value);
+    expect(fn1.mock.calls[0][0].value).toBe(INITIAL_STATE.value);
 });
 
 it("it notifies all subscribers when a new value is available", async () => {
@@ -32,8 +21,8 @@ it("it notifies all subscribers when a new value is available", async () => {
     const fn1 = jest.fn();
     const fn2 = jest.fn();
 
-    SampleResource.subscribe(fn1);
-    SampleResource.subscribe(fn2);
+    SampleResource.state.subscribe(fn1);
+    SampleResource.state.subscribe(fn2);
 
     SampleResource.fetch();
 
@@ -51,7 +40,7 @@ it("immediately provides a new subscriber with the current value if it's already
     await new Promise(process.nextTick);
 
     const fn1 = jest.fn();
-    SampleResource.subscribe(fn1);
+    SampleResource.state.subscribe(fn1);
 
     expect(fn1.mock.calls.length).toBe(1);
     expect(fn1.mock.calls[0][0].value).toBe(sampleResult);
@@ -61,23 +50,22 @@ it("notifies status subscribers with correct status updates", async () => {
     const SampleResource = getSampleResource();
 
     const requestSubscriber = jest.fn();
-    SampleResource.subscribe(requestSubscriber);
+    SampleResource.state.subscribe(requestSubscriber);
 
     expect(requestSubscriber).toHaveBeenCalledTimes(1);
-    expect(requestSubscriber).toHaveBeenLastCalledWith(initialRequest);
+    expect(requestSubscriber).toHaveBeenLastCalledWith(INITIAL_STATE);
 
     SampleResource.fetch();
 
     expect(requestSubscriber).toHaveBeenCalledTimes(2);
-    expect(requestSubscriber).toHaveBeenLastCalledWith(pendingRequest);
+    expect(requestSubscriber).toHaveBeenLastCalledWith(PENDING_STATE);
 
     await new Promise(process.nextTick);
 
     expect(requestSubscriber).toHaveBeenCalledTimes(3);
     expect(requestSubscriber).toHaveBeenLastCalledWith({
         value: sampleResult,
-        error: null,
-        status: "success",
+        status: "fulfilled",
     });
 });
 
@@ -85,7 +73,7 @@ it("notifies subscribers for all value changes in takeEvery mode", async () => {
     const SampleResource = getSampleResource({ mode: "takeEvery" });
 
     const valueSubscriber = jest.fn();
-    SampleResource.subscribe(valueSubscriber);
+    SampleResource.state.subscribe(valueSubscriber);
 
     expect(valueSubscriber).toHaveBeenCalledTimes(1);
 
@@ -94,14 +82,14 @@ it("notifies subscribers for all value changes in takeEvery mode", async () => {
     SampleResource.fetch();
 
     await new Promise(process.nextTick);
-    expect(valueSubscriber).toHaveBeenCalledTimes(5);
+    expect(valueSubscriber).toHaveBeenCalledTimes(7);
 });
 
 it("notifies subscribers for only the latest change in takeLatest mode", async () => {
     const SampleResource = getSampleResource({ mode: "takeLatest" });
 
     const valueSubscriber = jest.fn();
-    SampleResource.subscribe(valueSubscriber);
+    SampleResource.state.subscribe(valueSubscriber);
 
     expect(valueSubscriber).toHaveBeenCalledTimes(1);
 
@@ -111,25 +99,24 @@ it("notifies subscribers for only the latest change in takeLatest mode", async (
 
     await new Promise(process.nextTick);
 
-    expect(valueSubscriber).toHaveBeenCalledTimes(3);
+    expect(valueSubscriber).toHaveBeenCalledTimes(5);
 });
 
 it("only notifies status subscribers when status changes in takeEvery mode", async () => {
     const SampleResource = getSampleResource({ mode: "takeEvery" });
     const resourceSubscriber = jest.fn();
-    SampleResource.subscribe(resourceSubscriber);
+    SampleResource.state.subscribe(resourceSubscriber);
     expect(resourceSubscriber).toHaveBeenCalledTimes(1);
-    expect(resourceSubscriber).toHaveBeenLastCalledWith(initialRequest);
+    expect(resourceSubscriber).toHaveBeenLastCalledWith(INITIAL_STATE);
     SampleResource.fetch();
     SampleResource.fetch();
-    expect(resourceSubscriber).toHaveBeenCalledTimes(2);
-    expect(resourceSubscriber).toHaveBeenLastCalledWith(pendingRequest);
+    expect(resourceSubscriber).toHaveBeenCalledTimes(3);
+    expect(resourceSubscriber).toHaveBeenLastCalledWith(PENDING_STATE);
     await new Promise(process.nextTick);
-    expect(resourceSubscriber).toHaveBeenCalledTimes(4);
+    expect(resourceSubscriber).toHaveBeenCalledTimes(5);
     expect(resourceSubscriber).toHaveBeenLastCalledWith({
         value: sampleResult,
-        error: null,
-        status: "success",
+        status: "fulfilled",
     });
 });
 
@@ -140,20 +127,19 @@ it("sets status as error when the fetcher function throws/rejects", async () => 
     });
     const resultSubscriber = jest.fn();
 
-    ErrorResource.subscribe(resultSubscriber);
+    ErrorResource.state.subscribe(resultSubscriber);
 
-    expect(resultSubscriber).toHaveBeenLastCalledWith(initialRequest);
+    expect(resultSubscriber).toHaveBeenLastCalledWith(INITIAL_STATE);
 
     ErrorResource.fetch();
 
-    expect(resultSubscriber).toHaveBeenLastCalledWith(pendingRequest);
+    expect(resultSubscriber).toHaveBeenLastCalledWith(PENDING_STATE);
 
     await new Promise(process.nextTick);
 
     expect(resultSubscriber).toHaveBeenLastCalledWith({
-        value: null,
-        error: errorVal,
-        status: "error",
+        value: errorVal,
+        status: "rejected",
     });
 });
 
@@ -180,7 +166,7 @@ it("resets state after calling .reset()", async () => {
     const SampleResource = getSampleResource({ mode: "takeLatest" });
     const resultSubscriber = jest.fn();
 
-    SampleResource.subscribe(resultSubscriber);
+    SampleResource.state.subscribe(resultSubscriber);
 
     SampleResource.fetch();
 
@@ -188,9 +174,8 @@ it("resets state after calling .reset()", async () => {
 
     expect(resultSubscriber).toHaveBeenCalledTimes(3);
     expect(resultSubscriber).toHaveBeenLastCalledWith({
-        status: "success",
+        status: "fulfilled",
         value: sampleResult,
-        error: null,
     });
 
     SampleResource.reset();
@@ -198,5 +183,5 @@ it("resets state after calling .reset()", async () => {
     await new Promise(process.nextTick);
 
     expect(resultSubscriber).toHaveBeenCalledTimes(4);
-    expect(resultSubscriber).toHaveBeenLastCalledWith(initialRequest);
+    expect(resultSubscriber).toHaveBeenLastCalledWith(INITIAL_STATE);
 });

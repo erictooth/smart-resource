@@ -40,7 +40,7 @@ it("updates the status result", async () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.status).toBe("success");
+    expect(result.current.status).toBe("fulfilled");
 });
 
 it("correctly sets error status", async () => {
@@ -60,5 +60,5 @@ it("correctly sets error status", async () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.status).toBe("error");
+    expect(result.current.status).toBe("rejected");
 });
