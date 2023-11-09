@@ -12,6 +12,10 @@ export type ResourceState<T> =
 			value: Awaited<T>;
 	  }
 	| {
+			status: "refreshing";
+			value: Awaited<T>;
+	  }
+	| {
 			status: "rejected";
 			value: unknown;
 	  };

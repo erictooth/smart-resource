@@ -39,7 +39,7 @@ export class SmartResource<T> {
 				this.#cancelPromises(this.#running.splice(0, promiseIdx));
 				this.#running.shift();
 				this.state.next({
-					status: "fulfilled",
+					status: this.#running.length ? "refreshing" : "fulfilled",
 					value,
 				});
 			}
