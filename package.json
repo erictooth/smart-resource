@@ -6,7 +6,6 @@
 		"observable",
 		"resource",
 		"fetch",
-		"react",
 		"promise",
 		"async"
 	],
@@ -30,58 +29,23 @@
 		".": {
 			"import": "./dist-esm/index.js",
 			"require": "./dist-cjs/index.js"
-		},
-		"./react": {
-			"import": "./dist-esm/react.js",
-			"require": "./dist-cjs/react.js"
-		},
-		"./preact": {
-			"import": "./dist-esm/preact.js",
-			"require": "./dist-cjs/preact.js"
 		}
 	},
 	"dependencies": {
 		"rxjs": ">=5.0.0"
-	},
-	"peerDependencies": {
-		"preact": ">=10",
-		"react": ">=16.8.0"
-	},
-	"peerDependenciesMeta": {
-		"preact": {
-			"optional": true
-		},
-		"react": {
-			"optional": true
-		}
 	},
 	"devDependencies": {
 		"@erictooth/eslint-config": "^8.0.0",
 		"@swc/cli": "0.1.62",
 		"@swc/core": "1.3.96",
 		"@swc/jest": "0.2.29",
-		"@testing-library/react-hooks": "^8.0.1",
 		"@types/jest": "^28",
 		"@types/node": "^18.6.3",
-		"@types/react": "^18",
 		"eslint": "^8",
 		"jest": "^28",
-		"preact": "^10",
 		"prettier": "3.0.3",
-		"react": "^18.2.0",
-		"react-test-renderer": "^18.2.0",
 		"ts-node": "^10.9.1",
 		"typescript": "5.2.2"
-	},
-	"pnpm": {
-		"peerDependencyRules": {
-			"allowedVersions": {
-				"@types/react": "18",
-				"react": "18",
-				"react-dom": "18",
-				"react-test-renderer": "18"
-			}
-		}
 	},
 	"packageManager": "pnpm@8.10.2"
 }
