@@ -6,25 +6,26 @@ import {
 import { DEFAULT_OPTIONS, type ResourceOptions } from "./ResourceOptions";
 import { BehaviorSubject } from "rxjs";
 
-type Fetcher<T> = (...args: any) => T;
+export class SmartResource<T extends (...args: any[]) => any> {
+	#fetcher: T;
+	#options: Partial<ResourceOptions<ReturnType<T>>>;
+	#running: ReturnType<T>[] = [];
+	state = new BehaviorSubject<ResourceState<ReturnType<T>>>(INITIAL_STATE);
 
-export class SmartResource<T> {
-	#fetcher: Fetcher<T>;
-	#options: Partial<ResourceOptions<T>>;
-	#running: T[] = [];
-	state = new BehaviorSubject<ResourceState<T>>(INITIAL_STATE);
-
-	constructor(fetcher: Fetcher<T>, options: Partial<ResourceOptions<T>> = {}) {
+	constructor(
+		fetcher: T,
+		options: Partial<ResourceOptions<ReturnType<T>>> = {},
+	) {
 		this.#fetcher = fetcher;
 		this.#options = { ...DEFAULT_OPTIONS, ...options };
 	}
 
-	async fetch(...args: any[]) {
+	async fetch(...args: Parameters<T>) {
 		if (this.#options.mode === "takeLatest") {
 			this.#cancelPromises(this.#running.splice(0, this.#running.length));
 		}
 
-		const promise = this.#fetcher(...args);
+		const promise = this.#fetcher(...args) as ReturnType<T>;
 
 		this.#running.push(promise);
 
@@ -58,7 +59,7 @@ export class SmartResource<T> {
 		this.state.next(INITIAL_STATE);
 	}
 
-	#cancelPromises(promises: T[]): void {
+	#cancelPromises(promises: ReturnType<T>[]): void {
 		if (this.#options.onCancel) {
 			for (const promise of promises) {
 				this.#options.onCancel(promise);
