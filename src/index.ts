@@ -66,3 +66,5 @@ export class SmartResource<T> {
 		}
 	}
 }
+
+export type { ResourceOptions, ResourceState };
