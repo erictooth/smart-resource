@@ -82,7 +82,7 @@ it("notifies subscribers for all value changes in takeEvery mode", async () => {
 	SampleResource.fetch();
 
 	await new Promise(process.nextTick);
-	expect(valueSubscriber).toHaveBeenCalledTimes(7);
+	expect(valueSubscriber).toHaveBeenCalledTimes(5);
 });
 
 it("notifies subscribers for only the latest change in takeLatest mode", async () => {
@@ -110,10 +110,10 @@ it("only notifies status subscribers when status changes in takeEvery mode", asy
 	expect(resourceSubscriber).toHaveBeenLastCalledWith(INITIAL_STATE);
 	SampleResource.fetch();
 	SampleResource.fetch();
-	expect(resourceSubscriber).toHaveBeenCalledTimes(3);
+	expect(resourceSubscriber).toHaveBeenCalledTimes(2);
 	expect(resourceSubscriber).toHaveBeenLastCalledWith(PENDING_STATE);
 	await new Promise(process.nextTick);
-	expect(resourceSubscriber).toHaveBeenCalledTimes(5);
+	expect(resourceSubscriber).toHaveBeenCalledTimes(4);
 	expect(resourceSubscriber).toHaveBeenLastCalledWith({
 		value: sampleResult,
 		status: "fulfilled",

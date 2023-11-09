@@ -28,7 +28,9 @@ export class SmartResource<T> {
 
 		this.#running.push(promise);
 
-		this.state.next(PENDING_STATE);
+		if (this.#running.length === 1) {
+			this.state.next(PENDING_STATE);
+		}
 
 		try {
 			const value = await promise;
